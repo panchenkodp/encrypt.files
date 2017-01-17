@@ -15,6 +15,7 @@ namespace EncryptFiles
 				switch (args[0])
 				{
 					case "/decrypt":
+						Console.WriteLine("Decrypting...");
 						fileEncrypter.DecryptFiles();
 						break;
 					default:
@@ -25,8 +26,11 @@ namespace EncryptFiles
 				}
 			}
 			else
+			{ 
 				// Encrypt files
+				Console.WriteLine("Encrypting...");
 				fileEncrypter.EncryptFiles();
+			}
 		}
 	}
 }

